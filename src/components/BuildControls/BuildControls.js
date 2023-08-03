@@ -16,15 +16,15 @@ const buildControls = (props) => (
             return <BuildControl
                 key={ctrl.label}
                 label={ctrl.label}
-                AddIngredient={()=>props.AddIngredients(ctrl.type)}
-                RemoveIngredient={()=>props.RemoveIngredients(ctrl.type)}
-                Disable={props.DisableBtn[ctrl.type]}
+                AddIngredient={()=>props.addIngredients(ctrl.type)}
+                RemoveIngredient={()=>props.removeIngredients(ctrl.type)}
+                Disable={props.disableBtn[ctrl.type]}
                 price={props.totalPrice}
             />
         }
         )}
         <button className={classes.OrderButton}
-            disabled={!props.Purchaseable}
+            disabled={!props.purchaseable}
             onClick={props.purchase}
         >ORDER NOW</button>
     </div>
