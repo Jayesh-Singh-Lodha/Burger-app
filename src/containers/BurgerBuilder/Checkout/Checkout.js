@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import CheckoutSummary from "../../../components/Order/CheckoutSummary/CheckoutSummary";
-import { useNavigate, useLocation, Outlet } from "react-router-dom";
+import { useNavigate, useLocation, Outlet, Routes, Route } from "react-router-dom";
+import ContactData from "./ContactData/ContactData";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ const Checkout = () => {
   const [ingredients, setIngredients] = useState({});
 
   useEffect(() => {
+    // console.log(location);
     const ingredients = {};
     const query = new URLSearchParams(location.search);
     for (let params of query.entries()) {
@@ -18,11 +20,14 @@ const Checkout = () => {
   }, [location]);
 
   const checkoutCancelHandler = () => {
-    navigate("/");
+    navigate("/burger-builder");
   };
 
   const checkoutContinueHandler = () => {
-    navigate("/checkout/contact-data");
+    navigate({
+      pathname: '/contact-data',
+      search: location.search
+    });
   };
 
   return (
@@ -32,9 +37,14 @@ const Checkout = () => {
         checkoutCancel={checkoutCancelHandler}
         checkoutContinue={checkoutContinueHandler}
       />
-      <Outlet context={ingredients} />
+      <Outlet/>
     </div>
   );
 };
 
 export default Checkout;
+
+
+
+
+

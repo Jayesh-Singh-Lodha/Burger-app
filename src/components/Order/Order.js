@@ -13,20 +13,14 @@ export default function Order(props) {
 
   const ingredientsOutput = ingredients.map((ig) => {
     return <span key={ig.name}
-      style={{
-        textTransform: 'capitalize',
-        display: 'inline-block',
-        // width:'40%',
-        margin: '5px 8px',
-        border: '1px solid #ccc',
-        padding: '5px'
-      }}
     >{ig.name} ({ig.amount})</span>
   })
 
   return (
     <div className={classes.Order}>
-      <p>Ingredients:<br/> {ingredientsOutput}</p>
+      <h3 >Ordered for: {props.name}</h3>
+      <p style={{fontWeight:'bold'}}>Ordered on {props.time.day}/{props.time.month}/{props.time.year} at {props.time.hours}:{props.time.minutes}</p>
+      <p className={classes.Ingredients}>Ingredients:<br/> {ingredientsOutput}</p>
       <p>Total price: <strong>Rs.{props.totalPrice}</strong></p>
     </div>
   )

@@ -18,7 +18,7 @@
 }
 
 .Seeds1 {
-    width: 10%;
+    width: 7%;
     height: 15%;
     position: absolute;
     background-color: white;
@@ -56,7 +56,7 @@
   }
 
   .Seeds2 {
-    width: 10%;
+    width: 7%;
     height: 15%;
     position: absolute;
     background-color: white;
@@ -110,4 +110,13 @@
     height: 3%;
     background: linear-gradient(#bf3813, #c45e38);
     margin: 2% auto;
+}
+
+@media (min-width:500px) {
+  .Seeds1{
+    width: 10%;
+  }
+  .Seeds2{
+    width: 10%;
+  }
 }

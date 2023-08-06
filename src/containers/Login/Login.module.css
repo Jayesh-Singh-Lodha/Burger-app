@@ -1,0 +1,57 @@
+/* LoginForm.css */
+
+.LoginContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .LoginForm {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    padding: 2rem;
+    width: 70%;
+    max-width: 500px;
+    text-align: center;
+  }
+  
+  .LoginForm h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .LoginForm input {
+    width: 80%;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  .LoginForm button {
+    padding: 0.7rem 1rem;
+    background-color: #f15b29;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    display: inline-block;
+    margin: 10px;
+    box-sizing: border-box;
+  }
+  
+  .LoginForm button:hover {
+    background-color: #e74c3c;
+  }
+
+  .InvaildMsg{
+    color: red;
+    text-align: center;
+  }
+
+  
+  

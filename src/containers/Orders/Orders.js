@@ -1,17 +1,21 @@
-import React, { Component } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import Order from '../../components/Order/Order'
 import axios from '../../axios-order'
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler'
+import Spinner from "../../components/UI/Spinner/Spinner"
+import classes from "./Orders.module.css"
+import { MyContext } from '../../hoc/Layout/Layout'
 
-class Orders extends Component {
+const Orders = () => {
 
-    state = {
-        orders: [],
-        loading: true
-    }
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const { userId } = useContext(MyContext);
 
-    componentDidMount() {
-        axios.get("./orders.json").then(res => {
+    useEffect(() => {
+        if(!userId)return;
+        setLoading(true);
+        axios.get("/users/" + userId + "/orders.json").then(res => {
             const fetchedOrders = [];
             for (let key in res.data) {
                 fetchedOrders.push({
@@ -19,26 +23,50 @@ class Orders extends Component {
                     id: key
                 });
             }
-            this.setState({ loading: false ,orders:fetchedOrders });
+            setOrders(fetchedOrders);
+            setLoading(false);
         }).catch(err => {
-            this.setState({ loading: false});
+            setLoading(false);
         });
+    }, []
+    )
+
+    let spinner = null;
+    if (loading) {
+        spinner = <Spinner />
     }
 
-    render() {
-        return (
-            <div>
-                <h1 style={{textAlign:'center'}}>Your Orders</h1>
-                {this.state.orders.map(order=>(
-                    <Order 
-                    key={order.id}
-                    ingredients={order.ingredients}
-                    totalPrice={order.totalPrice}
-                    />
-                ))}
-            </div>
-        )
+    let content = <h1 className={classes.Heading}>Please login to see your orders</h1>;
+    if (userId) {
+        content = (
+            <>
+                <h1 className={classes.Heading}>Your Orders</h1>
+                {
+                    orders.map(order => (
+                        <Order
+                            key={order.id}
+                            name={order.customerDetails.name}
+                            ingredients={order.ingredients}
+                            totalPrice={order.totalPrice}
+                            time={order.time}
+                        />
+                    ))
+                }
+            </>
+        );
     }
+
+    return (
+        <>
+            {content}
+            {spinner}
+        </>
+    )
 }
 
-export default withErrorHandler(Orders,axios);
+export default withErrorHandler(Orders, axios);
+
+
+
+
+

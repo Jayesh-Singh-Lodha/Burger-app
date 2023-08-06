@@ -1,18 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createContext } from "react";
 import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/BuildControls/BuildControls';
 import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from "../../components/Burger/OrderSummary/OrderSummary";
 import axios from "../../axios-order";
+import Axios from "axios";
 import Spinner from "../../components/UI/Spinner/Spinner";
 import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 import { useNavigate } from "react-router-dom";
 
+
 const INGREDIENT_PRICES = {
-    cheese: 30,
-    meat: 50,
+    salad: 10,
     bacon: 20,
-    salad: 10
+    cheese: 30,
+    meat: 50
 };
 
 const BurgerBuilder = () => {
@@ -26,12 +28,15 @@ const BurgerBuilder = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        setLoading(true);
         axios.get('https://myburgerapp-7e6fd-default-rtdb.firebaseio.com/Ingredients.json')
             .then(response => {
                 setIngredients(response.data);
+                setLoading(false);
             })
             .catch(error => {
                 setError(true);
+                setLoading(false);
             });
     }, []);
 
@@ -81,40 +86,13 @@ const BurgerBuilder = () => {
     };
 
     const continueCheckoutHandler = () => {
-        setLoading(true);
-        const order = {
-            ingredients: ingredients,
-            totalPrice: totalPrice,
-            customer: {
-                name: 'Jayesh',
-                address: {
-                    area: 'Ganesh Nager',
-                    zipcode: '230241',
-                    country: 'India'
-                },
-                email: 'jayesh@gmail.com'
-            },
-            deliveryMethod: 'online'
-        };
-
-        axios.post('/orders.json', order)
-            .then(response => {
-                console.log(response);
-                setLoading(false);
-                setPurchasing(false);
-            })
-            .catch(error => {
-                console.log(error);
-                setLoading(false);
-                setPurchasing(false);
-            });
-
         const queryParams = [];
 
         for (let i in ingredients) {
             queryParams.push(encodeURI(i) + '=' + encodeURI(ingredients[i]));
         }
 
+        queryParams.push("totalPrice=" + totalPrice);
         const queryString = queryParams.join('&');
         navigate({
             pathname: '/checkout',
@@ -133,9 +111,9 @@ const BurgerBuilder = () => {
     let orderSummary = null;
     let burger = error ? <p>Ingredients can't be found</p> : <Spinner />;
 
-    if (ingredients) {
+    if (!loading) {
         burger = (
-            <>
+            <div>
                 <Burger ingredients={ingredients} />
                 <BuildControls
                     addIngredients={addIngredientsHandler}
@@ -145,7 +123,7 @@ const BurgerBuilder = () => {
                     purchaseable={isPurchaseable}
                     purchase={ordered}
                 />
-            </>
+            </div>
         );
 
         orderSummary = (
@@ -158,9 +136,9 @@ const BurgerBuilder = () => {
         );
     }
 
-    if (loading) {
-        orderSummary = <Spinner />;
-    }
+    // if (loading) {
+    //     orderSummary = <Spinner />;
+    // }
 
     return (
         <>
