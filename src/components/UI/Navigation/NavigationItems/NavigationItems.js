@@ -1,17 +1,25 @@
-import React, { useEffect } from "react";
+import React from "react";
 import classes from "./NavigationItems.module.css"
 import NavigationItem from "../NavigationItem/NavigationItem";
-import { MyContext } from "../../../../hoc/Layout/Layout";
-import { useContext } from "react";
+import { useAuth } from "../../../../context/authContext";
 
 const Navigationitems = (props) => {
 
+    const {userLoggedIn}=useAuth();
+
 return (
     <ul className={classes.NavigationItems}>
-        <NavigationItem
-            link="/"
-            click={props.click}
-        >Login/Signup</NavigationItem>
+        {
+            userLoggedIn?
+            <NavigationItem
+                link="/"
+                click={props.click}
+            >Logout</NavigationItem>:
+            <NavigationItem
+                link="/"
+                click={props.click}
+            >Login/Signup</NavigationItem>
+        }
         <NavigationItem
             link="/burger-builder"
             click={props.click}

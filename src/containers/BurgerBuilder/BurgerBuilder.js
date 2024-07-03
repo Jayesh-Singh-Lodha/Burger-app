@@ -1,10 +1,9 @@
-import React, { useState, useEffect, createContext } from "react";
+import React, { useState, useEffect } from "react";
 import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/BuildControls/BuildControls';
 import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from "../../components/Burger/OrderSummary/OrderSummary";
 import axios from "../../axios-order";
-import Axios from "axios";
 import Spinner from "../../components/UI/Spinner/Spinner";
 import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 import { useNavigate } from "react-router-dom";
@@ -115,6 +114,7 @@ const BurgerBuilder = () => {
         burger = (
             <div>
                 <Burger ingredients={ingredients} />
+                {!error?
                 <BuildControls
                     addIngredients={addIngredientsHandler}
                     removeIngredients={removeIngredientsHandler}
@@ -122,7 +122,8 @@ const BurgerBuilder = () => {
                     price={totalPrice.toFixed(2)}
                     purchaseable={isPurchaseable}
                     purchase={ordered}
-                />
+                />:
+                null}
             </div>
         );
 
@@ -135,10 +136,6 @@ const BurgerBuilder = () => {
             />
         );
     }
-
-    // if (loading) {
-    //     orderSummary = <Spinner />;
-    // }
 
     return (
         <>

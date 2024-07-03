@@ -1,7 +1,6 @@
 import React from "react";
 import classes from './Burger.module.css'
 import BurgerIngredients from "./BurgerIngredients.js/BurgerIngredients";
-import {useParams} from 'react-router-dom'
 
 const Burger=(props)=>{
     let transformedIngred=Object.keys(props.ingredients)
@@ -19,9 +18,6 @@ const Burger=(props)=>{
     if(transformedIngred.length===0){
         transformedIngred=<p>Please start adding ingredients!</p>
     }
-
-    const {id}=useParams();
-    // console.log(id);
 
     return ( 
     <div className={classes.Burger}>

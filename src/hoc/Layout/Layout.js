@@ -1,19 +1,17 @@
-import React, { createContext, useState } from "react";
+import React, { useState } from "react";
 import classes from './Layout.module.css';
 import Toolbar from "../../components/UI/Navigation/Toolbar/Toolbar";
 import Sidedrawer from "../../components/Sidedrawer/Sidedrawer";
 import { Outlet } from "react-router";
-
-const MyContext=createContext();
+import {useAuth} from '../../context/authContext'
 
 const Layout = (props) => {
     const [showSidedrawer, setShowSidedrawer] = useState(false);
-    // const [userLogged,setUserLogged]=useState(false);
-    const [userName,setUserName]=useState(null);
-    const [userEmail,setUserEmail]=useState(null);
-    const [userId,setUserId]=useState(null);
+    
+    const user=useAuth();
 
     const sidedrawerToggleHandler = () => {
+        console.log(user);
         setShowSidedrawer(prevState => !prevState.showSidedrawer);
     };
 
@@ -22,7 +20,7 @@ const Layout = (props) => {
     };
 
     return (
-        <MyContext.Provider value={{userName,userEmail,userId,setUserName,setUserEmail,setUserId}}>
+        <>
             <Toolbar toggle={sidedrawerToggleHandler} />
             <Sidedrawer
                 close={sidedrawerClosedHandler}
@@ -31,9 +29,8 @@ const Layout = (props) => {
             <main className={classes.Content}>{props.children}
             </main>
                 <Outlet />
-        </MyContext.Provider>
+        </>
     );
 };
 
 export default Layout;
-export {MyContext};

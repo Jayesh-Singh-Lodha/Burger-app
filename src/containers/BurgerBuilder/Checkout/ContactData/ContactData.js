@@ -1,17 +1,18 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '../../../../components/UI/Button/Button';
 import classes from './ContactData.module.css';
 import { useLocation, useNavigate } from 'react-router';
 import axios from "../../../../axios-order";
 import Spinner from '../../../../components/UI/Spinner/Spinner';
 import Input from '../../../../components/UI/Input/Input';
-import { MyContext } from '../../../../hoc/Layout/Layout';
+import { useAuth } from '../../../../context/authContext';
+import withErrorHandler from '../../../../hoc/withErrorHandler/withErrorHandler';
 
 const ContactData = (props) => {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const { userId } = useContext(MyContext);
+  const {currentUser,userLoggedIn}=useAuth();
 
   const orderForm = {
 
@@ -90,15 +91,18 @@ const ContactData = (props) => {
     let price = 0;
     const query = new URLSearchParams(location.search);
     for (let params of query.entries()) {
-      if (params[0] != "totalPrice")
+      if (params[0] !== "totalPrice")
         ingredients[params[0]] = +params[1];
       else {
         price = params[1];
       }
     }
+    if(!userLoggedIn){
+      setInvalidMsg( <p className={classes.InvalidEntry}>User not logged in</p>);
+    }
     setIngredients(ingredients);
     setTotalPrice(price);
-  }, [location]);
+  },[userLoggedIn,location.search]);
 
   const changeHandler = (e, id) => {
     let updatedForm = {
@@ -131,15 +135,12 @@ const ContactData = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    if (!userId) {
+    if (!userLoggedIn) {
       return;
     }
     for (let keys in formData) {
       if (formData[keys].isRequired && !formData[keys].isValidation) {
-        setInvalidMsg(<p
-          className={classes.InvalidEntry}
-        ><span style={{ textTransform: 'capitalize' }}>{keys}</span> is invalid
-        </p>);
+        setInvalidMsg(<p className={classes.InvalidEntry}>Invalid entry</p>);
         return;
       }
     }
@@ -165,23 +166,26 @@ const ContactData = (props) => {
       time: time
     };
 
-    axios.post('/users/'+userId+'/orders.json', order)
+    axios.post(`/users/${currentUser.uid}/orders.json`, order)
       .then(response => {
-        console.log('/users/'+{userId}+'/orders.json');
+        console.log(response)
         setLoading(false);
-        navigate("/burger-builder");
+        if(!response){
+          setInvalidMsg(<p className={classes.InvalidEntry}>Network Error</p>)
+          return;
+        }
+        navigate("/orders");
         alert("Your order has been placed successfully")
       })
       .catch(error => {
-        // console.log(error);
+        console.log(error);
         setLoading(false);
       });
   }
 
   let body = null;
   let orderItemsArray = [];
-  let userLoggedin = userId ? null :
-    <p className={classes.InvalidEntry}>You are not logged in</p>;
+   
 
   for (let keys in formData) {
     orderItemsArray.push({
@@ -204,14 +208,13 @@ const ContactData = (props) => {
           />
         ))}
         {invalidMsg}
-        {userLoggedin}
         <Button type="Success">ORDER</Button>
       </form>
     </div>
   );
 
   if (loading) {
-    body = <Spinner className={classes.Spinner} />;
+    body = <Spinner className={classes.Spinner} />
   }
 
   return (
@@ -221,4 +224,4 @@ const ContactData = (props) => {
   );
 };
 
-export default ContactData;
+export default withErrorHandler(ContactData,axios);

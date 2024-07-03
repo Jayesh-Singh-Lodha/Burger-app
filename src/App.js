@@ -1,26 +1,27 @@
-import React, { Component } from "react";
+import React from "react";
 import Layout from "./hoc/Layout/Layout";
-import BurgerBuilder from "./containers/BurgerBuilder/BurgerBuilder"
+import BurgerBuilder from "./containers/BurgerBuilder/BurgerBuilder";
 import Checkout from "./containers/BurgerBuilder/Checkout/Checkout";
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes } from "react-router-dom";
 import ContactData from "./containers/BurgerBuilder/Checkout/ContactData/ContactData";
 import Orders from "./containers/Orders/Orders";
-import Login from './containers/Login/Login'
+import Login from "./containers/Login/Login";
+import AuthProvider from "./context/authContext";
 
-class App extends Component {
-  render() {
-    return (
+const App = () => {
+  return (
+    <AuthProvider>
       <Layout>
         <Routes>
-          <Route path="/" element={<Login/>} />
-          <Route path='/burger-builder' element={<BurgerBuilder />} />
-          <Route path="/checkout" element={<Checkout/>} />
-          <Route path="/contact-data" element={<ContactData/>}/>
-          <Route path="/orders" element={<Orders/>}/>
+          <Route path="/" element={<Login />} />
+          <Route path="/burger-builder" element={<BurgerBuilder />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/contact-data" element={<ContactData />} />
+          <Route path="/orders" element={<Orders />} />
         </Routes>
       </Layout>
-    );
-  }
-}
+    </AuthProvider>
+  );
+};
 
 export default App;

@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import CheckoutSummary from "../../../components/Order/CheckoutSummary/CheckoutSummary";
-import { useNavigate, useLocation, Outlet, Routes, Route } from "react-router-dom";
-import ContactData from "./ContactData/ContactData";
+import { useNavigate, useLocation, Outlet } from "react-router-dom";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -10,7 +9,6 @@ const Checkout = () => {
   const [ingredients, setIngredients] = useState({});
 
   useEffect(() => {
-    // console.log(location);
     const ingredients = {};
     const query = new URLSearchParams(location.search);
     for (let params of query.entries()) {

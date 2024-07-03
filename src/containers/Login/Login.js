@@ -1,27 +1,25 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import classes from './Login.module.css';
-import axios from '../../axios-order';
-import Axios from 'axios';
+import axios from '../../axios-order'
 import { useNavigate } from 'react-router';
-import { MyContext } from '../../hoc/Layout/Layout';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import Spinner from '../../components/UI/Spinner/Spinner';
+
+import { useAuth } from '../../context/authContext';
+import { doCreateUserWithEmailAndPassword, doSignInWithEmailAndPassword ,doLogout} from '../../firebase/Auth';
 
 const Login = () => {
     const [signup, setSignup] = useState(true);
     const [login, setLogin] = useState(false);
-    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [userExist, setUserExist] = useState(null);
     const [inputsValidMsg, setInputsValidMsg] = useState(null);
     const [loading, setLoading] = useState(false);
-    const { setUserName, setUserEmail, setUserId } = useContext(MyContext);
+    const {userLoggedIn}=useAuth();
     const navigate = useNavigate();
 
     const handleLogin = (e) => {
         e.preventDefault();
-        // Add your login logic here (e.g., API call, authentication)
     };
 
     const cancelHandler = () => {
@@ -29,30 +27,24 @@ const Login = () => {
         setLogin(!login);
     }
 
-    const successHandler = () => {
+    const successHandler = async() => {
         if (signup) {
-            if (!name || !password || !email) {
+            if (!password || !email) {
                 setInputsValidMsg("Fill all details");
                 return;
             }
             setLoading(true);
-            const userDetails = {
-                email: email,
-                password: password,
-                name: name
+            try{
+                await doCreateUserWithEmailAndPassword(email,password);
+                console.log("User created successfully");
+                navigate('/burger-builder')
             }
-            axios.post("/users.json", userDetails).then(response => {
-                console.log(response);
-                setUserName(name);
-                setUserEmail(email);
-                setUserId(response.data.name)
-                setLoading(false);
-                navigate('/burger-builder');
-            })
-                .catch(error => {
-                    setLoading(false);
-                    console.log(error);
-                });
+            catch(error){
+                console.log(error);
+                setInputsValidMsg(error.message);
+            }
+            setLoading(false);
+            
             return;
         }
 
@@ -61,35 +53,28 @@ const Login = () => {
             return;
         }
         setLoading(true);
-        axios.get("/users.json").then(response => {
-            const usersInfo = [];
-            for (let userKey in response.data)
-                usersInfo.push({
-                    email: response.data[userKey].email,
-                    password: response.data[userKey].password,
-                    name: response.data[userKey].name,
-                    id: userKey
-                })
+        try{
+            await doSignInWithEmailAndPassword(email,password);
+            console.log('User Logged in');
+            navigate('/burger-builder')
+        }
+        catch(error){
+            console.log(error.message);
+            setInputsValidMsg(error.message);
+        }
+        setLoading(false);
+    }
 
-            // console.log(usersInfo);
-            for (let i = 0; i < usersInfo.length; i++) {
-                if (usersInfo[i].email === email && usersInfo[i].password === password) {
-                    setUserExist(null);
-                    setUserName(usersInfo[i].name);
-                    setUserEmail(usersInfo[i].email);
-                    setUserId(usersInfo[i].id);
-                    console.log(usersInfo[i].id);
-                    navigate('/burger-builder');
-                    return;
-                }
+    const logoutHandler=async()=>{
+            setLoading(true);
+            try{
+                await doLogout();
+                console.log("User logged out");
             }
-            setUserExist("User does not exist");
+            catch(error){
+                setInputsValidMsg(error.message);
+            }
             setLoading(false);
-        })
-            .catch(error => {
-                console.log(error);
-                setLoading(false);
-            });
     }
 
     let successBtn = null;
@@ -111,15 +96,6 @@ const Login = () => {
             <form className={classes.LoginForm} onSubmit={handleLogin}>
                 <h1>{successBtn}</h1>
                 <input
-                    type="name"
-                    placeholder="Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    style={{ display: signup ? 'inline-block' : 'none' }}
-                    noValidate
-                    autoComplete='off'
-                />
-                <input
                     type="text"
                     placeholder="Email"
                     value={email}
@@ -135,7 +111,6 @@ const Login = () => {
                     noValidate
                     autoComplete='off'
                 />
-                <p className={classes.InvaildMsg}>{userExist}</p>
                 <p className={classes.InvaildMsg}>{inputsValidMsg}</p>
                 <button
                     type="button"
@@ -148,17 +123,25 @@ const Login = () => {
                 </button>
             </form>
             </div>
-        );
+        );    
     }
+
+    let logout = (
+        <div className={classes.LoginContainer}>
+        <form className={classes.LoginForm} onSubmit={handleLogin}>
+        <button onClick={logoutHandler}>Logout</button>
+        </form>
+        </div>
+    );
 
     return (
         <>
-            {loginForm}
+           {!userLoggedIn? loginForm: logout}
         </>
     );
 };
 
-export default withErrorHandler(Login, Axios);
+export default withErrorHandler(Login, axios);
 
 
 
